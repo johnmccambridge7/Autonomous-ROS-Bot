@@ -1,0 +1,2 @@
+final_project
+-DCATKIN_DEVEL_PREFIX=/home/husarion/final_project/devel -DCMAKE_INSTALL_PREFIX=/home/husarion/final_project/install -G Unix Makefiles
