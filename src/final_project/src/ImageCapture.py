@@ -22,13 +22,15 @@ class ImageCapture:
 
 	self.cmd_pub = rospy.Publisher("/cmd_vel/", Twist)
 	self.rate = rospy.Rate(1000)
-	self.linear_vel = 0.5
+	self.linear_vel = 1
 
 	self.kp = 5
 	self.kd = 1
 
 	self.delta_error = 0
-	self.error = 0
+	self.error = 1
+
+	self.frame_number = 0
 
     def scale(self, percent):
 	scale_percent = percent # percent of original size
@@ -52,12 +54,12 @@ class ImageCapture:
 	edges = cv2.Canny(gray, 50, 150, apertureSize = 3)
 	retval, filtered = cv2.threshold(edges, 127,255, cv2.THRESH_BINARY)
 	lines = cv2.HoughLines(filtered, 1, np.pi/180, 5) # might look into detecting largest line
-	self.error = float("inf")
 
 	# display the filtered image
 	self.frame = filtered
 
 	if lines is not None:
+		self.state = 0
 		for rho,theta in lines[0]:
 			line = self.generateLine(rho, theta)
 
@@ -83,10 +85,12 @@ class ImageCapture:
 
 				self.delta_error = min(calculated_error - self.error, 100)
 				self.error = min(calculated_error, 100)
-
+	else:
+		self.state = 1
+		print("Unable to find a line...")
 			# self.renderText("y = " + str(gradient) + "x + " + str(intercept))
 
-	print(self.error)
+	# print(self.error)
 
 	# self.renderText("Error: " + str(self.error), (10, self.frame.shape[0] - 100), (255, 0, 0))
 
@@ -97,17 +101,22 @@ class ImageCapture:
 	msg = Twist()
 
 	proportional_component = self.kp * self.error
-	derivative_component = seld.kd * self.delta_error
+	derivative_component = self.kd * self.delta_error
 	error_correction = proportional_component + derivative_component
 	angular_cap = 5.5
 
+	msg.linear.x = self.linear_vel
 	msg.angular.z = max(min(error_correction, angular_cap), -1 * angular_cap)
 	self.cmd_pub.publish(msg)
+
+	print("angular change z: %f" % msg.angular.z)
 
     def start(self):
 	while not rospy.is_shutdown():
 		# track the line
-		self.follow_line()
+		if self.state == 0:
+			self.follow_line()
+
 		self.rate.sleep()
 
     def sigmoid(self, t):
@@ -126,7 +135,12 @@ class ImageCapture:
         return [(x1, y1), (x2, y2)]
 
     def render(self, image):
-        cv2.imshow('frame', image)
+        # cv2.imshow('frame', image)
+
+	cv2.imwrite("frames/frame_%d.jpg" % self.frame_number, image)
+
+	self.frame_number += 1
+
 	cv2.waitKey(1)
 
     def renderText(self, text, position=(10, 25), color=(0, 255, 0)):
