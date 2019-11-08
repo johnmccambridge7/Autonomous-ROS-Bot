@@ -23,7 +23,7 @@ class ImageCapture:
 	except CvBridgeError as e:
 		print(e)
 	
-	scale_percent = 80 # percent of original size
+	scale_percent = 50 # percent of original size
 	width = int(self.frame.shape[1] * scale_percent / 100)
 	height = int(self.frame.shape[0] * scale_percent / 100)
 	dim = (width, height)
@@ -35,9 +35,12 @@ class ImageCapture:
 	
 	gray = cv2.cvtColor(self.frame, cv2.COLOR_BGR2GRAY)
 	edges = cv2.Canny(gray, 50, 150, apertureSize = 3)
-	lines = cv2.HoughLines(edges, 1, np.pi/180, 5)
+	retval, filtered = cv2.threshold(edges, 127,255, cv2.THRESH_BINARY)
+	lines = cv2.HoughLines(filtered, 1, np.pi/180, 5)
 	error = float("inf")
 	
+	self.frame = filtered
+
 	if lines is not None:
 		for rho,theta in lines[0]:
 			line = self.generateLine(rho, theta)
@@ -55,7 +58,7 @@ class ImageCapture:
 		
 			if x2 - x1 != 0:
 				gradient = float(y2 - y1) / float(x2 - x1)
-				print(gradient)
+				#print(gradient)
 	
 			if gradient == 0:
 				error = 100
@@ -68,6 +71,8 @@ class ImageCapture:
 			
 			self.renderText("y = " + str(gradient) + "x + " + str(intercept))
 	
+
+	print(error)
 	
 	self.renderText("Error: " + str(error), (10, self.frame.shape[0] - 100), (255, 0, 0))
 	
