@@ -12,9 +12,12 @@ import math
 from collections import deque
 
 # Start and end nodes, and starting directions
+# Change these values to reflect desired goal and actual starting position/direction
 START = 0
 END = 15
 DIRECTION = 0
+
+
 
 # -----------------------------------------------------------------------
 # START OF BFS PATH PLANNING
@@ -52,55 +55,55 @@ def make_map():
 	node_list.append(Node("P"))
 
 	# Make the connections between nodes
-	node_list[0].right = Node_List[1]
-	node_list[1].right = Node_List[2]
-	node_list[2].right = Node_List[3]
-	node_list[4].right = Node_List[5]
-	node_list[5].right = Node_List[6]
-	node_list[7].right = Node_List[8]
-	node_list[8].right = Node_List[9]
-	node_list[9].right = Node_List[10]
-	node_list[10].right = Node_List[11]
-	node_list[12].right = Node_List[13]
-	node_list[13].right = Node_List[14]
-	node_list[14].right = Node_List[15]
+	node_list[0].right = node_list[1]
+	node_list[1].right = node_list[2]
+	node_list[2].right = node_list[3]
+	node_list[4].right = node_list[5]
+	node_list[5].right = node_list[6]
+	node_list[7].right = node_list[8]
+	node_list[8].right = node_list[9]
+	node_list[9].right = node_list[10]
+	node_list[10].right = node_list[11]
+	node_list[12].right = node_list[13]
+	node_list[13].right = node_list[14]
+	node_list[14].right = node_list[15]
 
-	node_list[1].left = Node_List[0]
-	node_list[2].left = Node_List[1]
-	node_list[3].left = Node_List[2]
-	node_list[5].left = Node_List[4]
-	node_list[6].left = Node_List[5]
-	node_list[8].left = Node_List[7]
-	node_list[9].left = Node_List[8]
-	node_list[10].left = Node_List[9]
-	node_list[11].left = Node_List[10]
-	node_list[13].left = Node_List[12]
-	node_list[14].left = Node_List[13]
-	node_list[15].left = Node_List[14]
+	node_list[1].left = node_list[0]
+	node_list[2].left = node_list[1]
+	node_list[3].left = node_list[2]
+	node_list[5].left = node_list[4]
+	node_list[6].left = node_list[5]
+	node_list[8].left = node_list[7]
+	node_list[9].left = node_list[8]
+	node_list[10].left = node_list[9]
+	node_list[11].left = node_list[10]
+	node_list[13].left = node_list[12]
+	node_list[14].left = node_list[13]
+	node_list[15].left = node_list[14]
 
-	node_list[4].up = Node_List[0]
-	node_list[5].up = Node_List[1]
-	node_list[7].up = Node_List[4]
-	node_list[8].up = Node_List[5]
-	node_list[9].up = Node_List[6]
-	node_list[10].up = Node_List[2]
-	node_list[11].up = Node_List[3]
-	node_list[12].up = Node_List[7]
-	node_list[13].up = Node_List[8]
-	node_list[14].up = Node_List[9]
-	node_list[15].up = Node_List[11]
+	node_list[4].up = node_list[0]
+	node_list[5].up = node_list[1]
+	node_list[7].up = node_list[4]
+	node_list[8].up = node_list[5]
+	node_list[9].up = node_list[6]
+	node_list[10].up = node_list[2]
+	node_list[11].up = node_list[3]
+	node_list[12].up = node_list[7]
+	node_list[13].up = node_list[8]
+	node_list[14].up = node_list[9]
+	node_list[15].up = node_list[11]
 
-	node_list[0].down = Node_List[4]
-	node_list[1].down = Node_List[5]
-	node_list[2].down = Node_List[10]
-	node_list[3].down = Node_List[11]
-	node_list[4].down = Node_List[7]
-	node_list[5].down = Node_List[8]
-	node_list[6].down = Node_List[9]
-	node_list[7].down = Node_List[12]
-	node_list[8].down = Node_List[13]
-	node_list[9].down = Node_List[14]
-	node_list[11].down = Node_List[15]
+	node_list[0].down = node_list[4]
+	node_list[1].down = node_list[5]
+	node_list[2].down = node_list[10]
+	node_list[3].down = node_list[11]
+	node_list[4].down = node_list[7]
+	node_list[5].down = node_list[8]
+	node_list[6].down = node_list[9]
+	node_list[7].down = node_list[12]
+	node_list[8].down = node_list[13]
+	node_list[9].down = node_list[14]
+	node_list[11].down = node_list[15]
 
 	return node_list
 
@@ -182,7 +185,7 @@ def solved(node, robot_direction):
 			if reorder[i].left == reorder[i + 1]:
 				result.append(3)
 
-	return convert_direction(result, robot_Direction)
+	return convert_direction(result, robot_direction)
 
 
 # Check if it is Goal
@@ -217,6 +220,9 @@ def bfs(start, end, direction):
 
 # END OF BFS PATH PLANNING
 # --------------------------------------------------------------------------------------------
+
+
+
 
 
 # START OF ROBOT MOTION
@@ -310,8 +316,6 @@ class AutoDriver:
 		"""for (x, y, w, h) in stopSigns:
 			cv2.rectangle(self.frame, (x, y), (x + w, y + h), (0, 255, 0), 2)"""
 		self.at_stopsign = True
-		#self.state = 0
-		print("Stop sign has been detected: " + str(time.time()))
 		return
 	
 	self.at_stopsign = False
@@ -340,7 +344,7 @@ class AutoDriver:
 		cv2.line(self.frame, (x1,y1), (x2,y2), (255,255,255), 3)
 
 		calculated_error = self.calc_error(x1, y1, x2, y2, middle_x)/200.0
-		#self.renderText("Error: " + str(calculated_error))
+		self.renderText("Error: " + str(calculated_error))
 		self.delta_error = min(calculated_error - self.error, 100)
 		self.error = calculated_error
 
@@ -408,24 +412,22 @@ class AutoDriver:
 		if rospy.get_time() - self.turn_start_time > time:
 			self.turning = False
 			self.at_intxn = False
-			#self.state = 1
 		else:
 			self.mvmt_msg.angular.z = self.current_turn * np.pi/6
 			self.mvmt_msg.linear.x = 0.1
 	elif self.directions:
-		print("Popping")
-		#print(self.state)
-		self.current_turn = self.directions.popleft()
+		self.current_turn = self.directions.popleft() # Gets the next direction to turn
 		self.turning = True
 		self.turn_start_time = rospy.get_time()
 
+
+    # Stops all robot movement
     def stop_robot(self):
-	#print "stopping"
 	self.mvmt_msg.linear.x = 0.0
 	self.mvmt_msg.angular.z = 0.0
-	#self.cmd_pub.publish(self.mvmt_msg)
 
 
+    # Figures out the FSM state of the robot based off of the flags
     def calc_state(self):
 	self.state = 1
 	if self.obstacle or self.at_stopsign:
@@ -436,24 +438,26 @@ class AutoDriver:
 		self.state = 2
 
 
+    # Method to start the autonomous driving robot
     def start(self):
-	rospy.Rate(0.4).sleep()
+	rospy.Rate(0.4).sleep() # Pauses for a bit at first to settle the camera
 	while not rospy.is_shutdown():
-		self.calc_state()
-		# track the line
-		#print(self.state)
+		self.calc_state() # Finds the state of robot
+	
+		# FSM
 		if self.state == 0:
 			self.stop_robot()
 		elif self.state == 1:
 			self.follow_line()
 		elif self.state == 2:
 			self.make_turn()
+
+		# Publish correct cmd_vel message
 		self.cmd_pub.publish(self.mvmt_msg)
 		self.rate.sleep()
 
-    def sigmoid(self, t):
-	return (2 / (1 + (math.exp(-1 * t)))) - 1
 
+    # Generates line based off of rho and theta values, gives xy coords of end points
     def generateLine(self, rho, theta):
         a = np.cos(theta)
         b = np.sin(theta)
@@ -461,21 +465,29 @@ class AutoDriver:
         y0 = b*rho
         x1 = int(x0 + 1000*(-b))
         y1 = int(y0 + 1000*(a))
-        x2 = int(x0 - 1000*(-b))Make_map
+        x2 = int(x0 - 1000*(-b))
         y2 = int(y0 - 1000*(a))
 
         return [(x1, y1), (x2, y2)]
 
+
+    # Renders the frames to display on a monitor
     def render(self, image):
         cv2.imshow('frame', image)
 	cv2.waitKey(1)
 
+
+    # Renders text into the frame to visualize values
     def renderText(self, text, position=(10, 25), color=(0, 255, 0)):
         cv2.putText(self.frame, text, position, cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0,255,0), 2)
 
+
+    # Stops the RGB camera
     def stop(self):
         self.camera.release()
 
+
+# Main method to path plan and start the autonomous driving
 if __name__ == '__main__':
 	rospy.init_node('image_capture')
 
