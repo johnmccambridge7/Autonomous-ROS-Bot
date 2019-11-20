@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>final_project</name>
+  <name>SelfDrivingCar</name>
   <version>0.0.0</version>
-  <description>The final_project package</description>
+  <description>Self Driving Car</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag -->
   <!-- Example:  -->
   <!-- <maintainer email="jane.doe@example.com">Jane Doe</maintainer> -->
-  <maintainer email="husarion@todo.todo">husarion</maintainer>
+  <maintainer email="bryan.d.shin.20@dartmouth.edu">husarion</maintainer>
 
 
   <!-- One license tag required, multiple allowed, one license per tag -->
