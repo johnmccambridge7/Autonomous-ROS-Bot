@@ -13,9 +13,9 @@ from collections import deque
 
 # Start and end nodes, and starting directions
 # Change these values to reflect desired goal and actual starting position/direction
-START = 0
-END = 15
-DIRECTION = 0
+START = 2
+END = 13
+DIRECTION = 1
 
 
 
@@ -270,6 +270,7 @@ class AutoDriver:
 	self.at_intxn = False
 	self.turning = False
 	self.current_turn = 0
+	self.finished_path = False
 
 
     # Callback for the LIDAR scanner
@@ -321,7 +322,7 @@ class AutoDriver:
 	self.at_stopsign = False
 	
 	# Crop the frame and filter into black and white for line detection
-	self.frame = self.frame[300:480, 0:640]
+	self.frame = self.frame[320:480, 0:640]
 	lbound = np.array([0,0,0], dtype = "uint8")
 	ubound = np.array([50,50,50], dtype = "uint8")
 	mask = cv2.inRange(self.frame, lbound, ubound)
@@ -408,17 +409,29 @@ class AutoDriver:
     # Method to make left, right, and straight turns
     def make_turn(self):
 	if self.turning:
-		time = 4 # Time taken to turn
+		if self.current_turn == 0:
+			time = 3
+		else: 
+			time = 6
+		#time = 6 # Time taken to turn
 		if rospy.get_time() - self.turn_start_time > time:
 			self.turning = False
 			self.at_intxn = False
-		else:
+		elif rospy.get_time() - self.turn_start_time > 2.5:
 			self.mvmt_msg.angular.z = self.current_turn * np.pi/6
+			if self.current_turn == 0:
+				self.mvmt_msg.linear.x = 0.1
+			else:
+				self.mvmt_msg.linear.x = 0
+		else:
+			self.mvmt_msg.angular.z = 0
 			self.mvmt_msg.linear.x = 0.1
 	elif self.directions:
 		self.current_turn = self.directions.popleft() # Gets the next direction to turn
 		self.turning = True
 		self.turn_start_time = rospy.get_time()
+	else:
+		self.finished_path = True
 
 
     # Stops all robot movement
@@ -430,6 +443,10 @@ class AutoDriver:
     # Figures out the FSM state of the robot based off of the flags
     def calc_state(self):
 	self.state = 1
+	if self.finished_path:
+		self.state = 0
+		return
+
 	if self.obstacle or self.at_stopsign:
 		self.state = 0
 		return
